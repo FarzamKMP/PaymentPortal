@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 
+class BalanceResponse(BaseModel):
+    balance: int
+
 class CardInfo(BaseModel):
     card_number: int
     cardholder_name: str
