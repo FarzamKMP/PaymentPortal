@@ -1,28 +1,26 @@
 from pydantic import BaseModel
 
-class BalanceRequest(BaseModel):
-    account_number: str
-class BalanceResponse(BaseModel):
-    account_number: str
-    balance: int
-
-class CardInfo(BaseModel):
-    card_number: int
-    cardholder_name: str
-    expiration_date: str
-    cvv: int
-
 class twostepVerificationRequest(BaseModel):
-    card_number: int
+    account_number: str
     cardholder_name: str
     expiration_date: str
     cvv: int
-
 class twostepVerificationResponse(BaseModel):
     verification_code: int
 
+
+class FinalVerificationRequest(BaseModel):
+    account_number: str
+    cardholder_name: str
+    expiration_date: str
+    cvv: int
+    verification_code: int
+class FinalVerificationResponse(BaseModel):
+    status: bool
+
+
 class PaymentRequest(BaseModel):
-    card_number: int
+    account_number: str
     cardholder_name: str
     expiration_date: str
     cvv: int
@@ -32,3 +30,11 @@ class PaymentRequest(BaseModel):
 class PaymentResponse(BaseModel):
     status: str
     message: str
+
+
+class BalanceRequest(BaseModel):
+    account_number: str
+    verification_code: int
+class BalanceResponse(BaseModel):
+    account_number: str
+    balance: int
