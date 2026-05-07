@@ -1,6 +1,9 @@
 from pydantic import BaseModel
 
+class BalanceRequest(BaseModel):
+    account_number: str
 class BalanceResponse(BaseModel):
+    account_number: str
     balance: int
 
 class CardInfo(BaseModel):

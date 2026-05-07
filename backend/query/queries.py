@@ -2,27 +2,27 @@ from .connection import create_connection
 
 connection = create_connection()
 
-def get_balance(account_id):
+def get_balance(account_number):
     cursor = connection.cursor()
-    cursor.execute("SELECT balance FROM accounts WHERE account_id = %s", (account_id,))
+    cursor.execute("select a.balance from users u join accounts a on u.id = a.user_id where a.account_number = %s;", (account_number,))
     result = cursor.fetchone()
     cursor.close()
     return result[0] if result else None
 
-def update_balance(account_id, new_balance):
+def update_balance(account_number, new_balance):
     cursor = connection.cursor()
     cursor.execute(
-        "UPDATE accounts SET balance = %s WHERE account_id = %s",
-        (new_balance, account_id)
+        "UPDATE accounts SET balance = %s WHERE account_number = %s",
+        (new_balance, account_number)
     )
     connection.commit()
     cursor.close()
 
-def withdraw(account_id, amount):
+def withdraw(account_number, amount):
     cursor = connection.cursor()
     cursor.execute(
-        "UPDATE accounts SET balance = balance - %s WHERE account_id = %s AND balance >= %s",
-        (amount, account_id, amount)
+        "UPDATE accounts SET balance = balance - %s WHERE account_number = %s AND balance >= %s",
+        (amount, account_number, amount)
     )
     connection.commit()
     affected = cursor.rowcount
@@ -31,11 +31,11 @@ def withdraw(account_id, amount):
         return "Account not found or insufficient funds"
     return "Withdrawal successful"
 
-def deposit(account_id, amount):
+def deposit(account_number, amount):
     cursor = connection.cursor()
     cursor.execute(
-        "UPDATE accounts SET balance = balance + %s WHERE account_id = %s",
-        (amount, account_id)
+        "UPDATE accounts SET balance = balance + %s WHERE account_number = %s",
+        (amount, account_number)
     )
     connection.commit()
     affected = cursor.rowcount

@@ -4,8 +4,8 @@ class BankSystem:
     def __init__(self):
         pass
 
-    def get_account_balance(self, account_id):
-        return get_balance(account_id)
+    def get_account_balance(self, account_number):
+        return get_balance(account_number)
 
     def _update_account_balance(self, account_id, new_balance):
         update_balance(account_id, new_balance)
