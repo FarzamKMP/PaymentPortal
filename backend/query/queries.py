@@ -18,7 +18,7 @@ def update_balance(account_number, new_balance):
     connection.commit()
     cursor.close()
 
-def withdraw(account_number, amount):
+def safe_withdraw(account_number, amount):
     cursor = connection.cursor()
     cursor.execute(
         "UPDATE accounts SET balance = balance - %s WHERE account_number = %s AND balance >= %s",
@@ -28,10 +28,10 @@ def withdraw(account_number, amount):
     affected = cursor.rowcount
     cursor.close()
     if affected == 0:
-        return "Account not found or insufficient funds"
-    return "Withdrawal successful"
+        raise ValueError("Insufficient funds or account not found")
+    return get_balance(account_number)
 
-def deposit(account_number, amount):
+def safe_deposit(account_number, amount):
     cursor = connection.cursor()
     cursor.execute(
         "UPDATE accounts SET balance = balance + %s WHERE account_number = %s",
@@ -41,5 +41,31 @@ def deposit(account_number, amount):
     affected = cursor.rowcount
     cursor.close()
     if affected == 0:
-        return "Account not found"
-    return "Deposit successful"
+        raise ValueError("Account not found")
+    return get_balance(account_number)
+
+def safe_transfer(from_account_number, to_account_number, amount):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            "UPDATE accounts SET balance = balance - %s WHERE account_number = %s AND balance >= %s",
+            (amount, from_account_number, amount)
+        )
+        if cursor.rowcount == 0:
+            raise ValueError("Insufficient funds or source account not found")
+
+        cursor.execute(
+            "UPDATE accounts SET balance = balance + %s WHERE account_number = %s",
+            (amount, to_account_number)
+        )
+        if cursor.rowcount == 0:
+            raise ValueError("Destination account not found")
+
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        cursor.close()
+    return get_balance(from_account_number)
+    
